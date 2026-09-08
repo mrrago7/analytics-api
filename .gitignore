@@ -5,3 +5,4 @@ __pycache__/
 *.iml
 .DS_Store
 Thumbs.db
+.venv_new/
