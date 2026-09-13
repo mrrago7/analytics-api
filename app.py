@@ -15,5 +15,8 @@ def get_files():
         data=data_processor.read_file(file)
     except data_processor.UnsupportedFileType:
         return {"error": "Unsupported file type"}, 415
+
+    data=data_processor.clean_data(data)
+    
     json_data=data.to_json(orient='records', indent=2)
     return json_data

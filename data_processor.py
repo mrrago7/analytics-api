@@ -13,3 +13,16 @@ def read_file(file):
     else:
         raise UnsupportedFileType
     return data
+
+def clean_data(data):
+
+    new_data=data.drop_duplicates()
+
+    num_data=new_data.select_dtypes(include='number')
+    num_data=num_data.fillna(num_data.median())
+    text_data=new_data.select_dtypes(include='str').fillna("Unknown")
+    
+    new_data[new_data.select_dtypes(include='number').columns]=num_data
+    new_data[new_data.select_dtypes(include='str').columns]=text_data
+
+    return new_data
