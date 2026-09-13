@@ -21,8 +21,17 @@ def clean_data(data):
     num_data=new_data.select_dtypes(include='number')
     num_data=num_data.fillna(num_data.median())
     text_data=new_data.select_dtypes(include='str').fillna("Unknown")
-    
+
     new_data[new_data.select_dtypes(include='number').columns]=num_data
     new_data[new_data.select_dtypes(include='str').columns]=text_data
 
     return new_data
+
+def calculate_statistics(data):
+    num_data=data.select_dtypes(include='number')
+
+    mean=num_data.mean().to_dict()
+    median=num_data.median().to_dict()
+    corr=num_data.corr().to_dict()
+
+    return {"mean": mean, "median": median, "correlation": corr}
