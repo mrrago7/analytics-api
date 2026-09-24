@@ -72,3 +72,44 @@ def get_clean_data():
     json_cleaned_data=cleaned_data.to_json(orient='records', indent=2, force_ascii=False)
 
     return json_cleaned_data
+
+@app.route("/files/<int:file_id>", methods=["GET"])
+def read_file(file_id):
+    file=File.query.get(file_id)
+    if file is None:
+        return {"error": "File not found"}, 404
+
+    return {"id": file.id, "filename": file.filename, "file_type": file.file_type, "created_at": file.created_at}
+
+@app.route("/files/<int:file_id>", methods=["PUT"])
+def update_file(file_id):
+    file=File.query.get(file_id)
+    if file is None:
+        return {"error": "File not found"}, 404
+
+    try:
+        new_file=request.files["file"]
+    except KeyError:
+        return {"error": "File is required"}, 400
+
+    new_file_type=os.path.splitext(new_file.filename)[1].lower()
+    file.filename=new_file.filename
+    file.file_type=new_file_type
+    file.file_data=new_file.read()
+    file.created_at=datetime.now()
+
+    db.session.commit()
+
+    return {"id": file.id, "filename": file.filename, "file_type": file.file_type, "created_at": file.created_at}
+
+@app.route("/files/<int:file_id>", methods=["DELETE"])
+def delete_file(file_id):
+    file=File.query.get(file_id)
+    if file is None:
+        return {"error": "File not found"}, 404
+
+    db.session.delete(file)
+    db.session.commit()
+
+    return {"ok": "file is deleted"}
+    
