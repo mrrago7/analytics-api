@@ -7,6 +7,7 @@ app.json.sort_keys = False
 app.json.compact = False
 
 from models import File
+from models import AnalysisResult
 from extensions import db
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres:2952246@localhost:5432/analytics-api"
 db.init_app(app)
@@ -38,7 +39,6 @@ def get_files():
 
 with app.app_context():
     db.create_all()
-    print("Tables created")
 
 @app.route("/data/stats", methods=["GET"])
 def get_stats():
@@ -47,5 +47,10 @@ def get_stats():
     if file is None:
             return {"error": "File not found"}, 404
     stat=data_processor.calculate_statistics(data_processor.file_to_dataframe(file))
+
+    new_result=AnalysisResult(file_id=file_id, mean=stat.get("mean"), median=stat.get("median"), correlation=stat.get("correlation"),created_at=datetime.now())
+    
+    db.session.add(new_result)
+    db.session.commit()
 
     return stat
