@@ -17,7 +17,7 @@ import data_processor
 
 from datetime import datetime
 
-@app.route("/api/v1/files", methods=["POST"])
+@app.route("/upload", methods=["POST"])
 def get_files():
     try:
         file=request.files["file"]
@@ -43,6 +43,9 @@ with app.app_context():
 @app.route("/data/stats", methods=["GET"])
 def get_stats():
     file_id=request.args.get("file_id")
+    if file_id is None:
+        return {"error": "file_id is required"}, 400
+    
     file=File.query.get(file_id)
     if file is None:
             return {"error": "File not found"}, 404
@@ -54,3 +57,18 @@ def get_stats():
     db.session.commit()
 
     return stat
+
+@app.route("/data/clean", methods=["GET"])
+def get_clean_data():
+    file_id=request.args.get("file_id")
+    if file_id is None:
+        return {"error": "file id is required"}, 400
+    
+    file=File.query.get(file_id)
+    if file is None:
+        return {"error": "File not found"}, 404
+    
+    cleaned_data=data_processor.clean_data(data_processor.file_to_dataframe(file))
+    json_cleaned_data=cleaned_data.to_json(orient='records', indent=2, force_ascii=False)
+
+    return json_cleaned_data

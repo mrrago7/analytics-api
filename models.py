@@ -16,5 +16,3 @@ class AnalysisResult(db.Model):
     median=db.Column(db.JSON)
     correlation=db.Column(db.JSON)
     created_at=db.Column(db.DateTime)
-
-print("AnalysisResult ID:", AnalysisResult.id)
