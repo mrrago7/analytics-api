@@ -7,5 +7,4 @@ __pycache__/
 Thumbs.db
 .venv_new/
 *.csv
-*.txt
 *.xlsx
