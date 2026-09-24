@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import io
 
 class UnsupportedFileType(Exception):
     pass
@@ -35,3 +36,17 @@ def calculate_statistics(data):
     corr=num_data.corr().to_dict()
 
     return {"mean": mean, "median": median, "correlation": corr}
+
+def file_to_dataframe(file):
+    file_name=file.filename
+    file_data=file.file_data
+    file_type=os.path.splitext(file_name)[1].lower()
+
+    if file_type=='.csv':
+        data=pd.read_csv(io.BytesIO(file_data))
+    elif file_type=='.xlsx':
+        data=pd.read_excel(io.BytesIO(file_data))
+    else:
+        raise UnsupportedFileType
+
+    return data
